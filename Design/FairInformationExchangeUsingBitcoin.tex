@@ -1,5 +1,9 @@
 \documentclass[]{article}
 \usepackage{tikz}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{pst-node,pst-plot}
+\usepackage{svg}
 
 %opening
 \title{Practical implementation for fair exchange of two pieces of information using a single Bitcoin transaction involving punishment for non-cooperating party}
@@ -26,9 +30,23 @@ So the built transaction will have two inputs and two outputs, two inputs are th
 
 \subsection{Transaction details}
 
+The desired transaction will have 2 inputs, and two outputs, as in Figure \ref{fig:transaction}.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1\textwidth]{images/transaction.eps}
+	\caption{Segwit transaction	to be signed and posted to blockchain}
+	\label{fig:transaction}
+\end{figure}
+
+Input amounts are what each party needs to put into transaction (contract) as collateral, that if the corresponding output was not claimed, will become available to the other party after sometime as a mechanism of punishment for not following the protocol. If the output is claimed, this will release the information required for the exchange.
+
+Output script will generally be like following (Actual details will depend on the hash type):
+
 \section{Conclusion}
 a- zkSNARK to make sure exchanged information is what they should be as described.
 b- Problem of second signing party not broadcasting the transaction
+
 
 \begin{thebibliography}{9}
 	\bibitem{ray2002}

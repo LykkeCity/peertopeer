@@ -1,0 +1,1 @@
+The image is the result of http://www.draw.io usage (The xml file). The "export as SVG" menu option is used there, to get the SVG output. Then the svg file was converted to eps format and was included in tex file. The conversion tool used is https://convertio.co/svg-eps/ .
