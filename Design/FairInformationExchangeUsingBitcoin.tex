@@ -43,6 +43,20 @@ Input amounts are what each party needs to put into transaction (contract) as co
 
 Output script will generally be like following (Actual details will depend on the hash type):
 
+\begin{verbatim}
+OP_SHA256
+<Y> OP_EQUAL
+OP_IF
+<Self Pubkey>
+OP_ELSE
+<block_height+number of blocks in the required timeout period> OP_CHECKLOCKTIMEVERIFY OP_DROP
+<Other party Pubkey>
+OP_ENDIF
+OP_CHECKSIG
+\end{verbatim}
+
+The above output could be claimed by the party putting collateral, if it releases the pre-image of the hash. Otherwise after some designated time, the other party could claim the collateral as punishment for not releasing the pre-image. So if every party is interested in claiming its collateral (which normally should be case), the result would be release of pre-images to blockchain which means every party would become aware of the other party's pre-image and exchange of pre-images has happened.
+
 \section{Conclusion}
 a- zkSNARK to make sure exchanged information is what they should be as described.
 b- Problem of second signing party not broadcasting the transaction
