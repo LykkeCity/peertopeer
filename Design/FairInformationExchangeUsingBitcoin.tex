@@ -1,13 +1,17 @@
 \documentclass[]{article}
+\usepackage{authblk}
 \usepackage{tikz}
 \usepackage{graphics}
 \usepackage{graphicx}
 \usepackage{pst-node,pst-plot}
 \usepackage{svg}
 
+
 %opening
 \title{Practical implementation for fair exchange of two pieces of information using a single Bitcoin transaction involving punishment for non-cooperating party}
 \author{Shahpour Moavenat}
+\affil{Lykke Corp}
+
 \begin{document}
 
 \maketitle
@@ -15,7 +19,7 @@
 \begin{abstract}
 There are some problems in which it is required to exchange two pieces of information between parties who do not trust each other, two of these problems are mentioned in the next section. This problem has been vastly studied, for example in \cite{ray2002} and \cite{asokan99}. In this article a method is presented so that by building and publishing a bitcoin transaction, each party should either reveal the agreed upon piece of information or if after some designated time passed, pay an agreed upon sum of Bitcoin to the other party.
 
-\textbf{Related work:} A similar high level study is available including some suggestions to change Bitcoin protocol in \cite{andrychowicz}.
+\textbf{Related work:} A similar high level study is available including some suggestions to change Bitcoin protocol in \cite{andrychowicz}. In \cite{maxwell2016} a method using zkSNARKs\cite{ethzkSNARK} to pay for a solution to a problem is described. The current article uses the idea described there.
 \end{abstract}
 
 \section{Introduction}
@@ -45,7 +49,7 @@ Output script will generally be like following (Actual details will depend on th
 
 \begin{verbatim}
 OP_SHA256
-<Y> OP_EQUAL
+<Hash of pre-image> OP_EQUAL
 OP_IF
 <Self Pubkey>
 OP_ELSE
@@ -57,10 +61,23 @@ OP_CHECKSIG
 
 The above output could be claimed by the party putting collateral, if it releases the pre-image of the hash. Otherwise after some designated time, the other party could claim the collateral as punishment for not releasing the pre-image. So if every party is interested in claiming its collateral (which normally should be case), the result would be release of pre-images to blockchain which means every party would become aware of the other party's pre-image and exchange of pre-images has happened.
 
-\section{Conclusion}
-a- zkSNARK to make sure exchanged information is what they should be as described.
-b- Problem of second signing party not broadcasting the transaction
+\section{Extension}
 
+Some information to be exchanged may need some checks that may not be as simple and applicable to output script as a simple hash calculation described above. For example we can consider exchange of two digital signatures for a hash. In this case the required checks includes if signature is correct, actually belongs to the expected public key. Including all the checks in the output script may some problems including being it possible or not and also large number of instructions (which for example in Ethereum network will lead to large amount of ethers used for calculation, and it Bitcoin will lead to high transaction fees).
+
+One possible workaround would be sending an encrypted version of the signature to the other party and also the hash of the encryption key for the signature. Then there would be a proof which justifies that with actual encryption key (for which the hash is available), the receiving party could decrypt the encrypted signature which is also the desired one for the preknown public key. These kind of proofs could be provided by zkSNARKs\cite{ethzkSNARK}. Then what would actually be exchanged over blockchain are those pre-images for the hashed encryption keys.
+
+This method could be probably applied to large set of exchange problems.
+
+\section{Other considerations}
+
+The proposed protocol over Bitcoin has one advantage that is symmetrical. Which means after the transaction is posted over blockchain no party has the top hand over the other, this is because in Bitcoin we can have transactions which can have multiple inputs. In other blockchains it become of intereset of who does what and when (The order becomes important).
+
+Related to above is one problem of protocol that is about what would happen if the party signing the transaction as the second will not broadcast the transaction? A possible benefit for this operation would be to broadcast the transaction when it is not expected and after timeout claim the collateral. One solution would be to monitor blockchain for a specific time, and if the transaction was not brodcasted, the collateral input will be spent, so the unbroadcasted transaction could no more be broadcasted. To achieve this goal the transaction id to be monitored should be independent of signatures using approaches like segregated witness\cite{segwit}.
+
+\section{Conclusion}
+
+In this article I have presented a method to exchange two pieces of information using Bitcoin blockchain, and if one party is not keeping it words, it will pay by paying a fine. Future path to be solved is the reduction of amount of fees paid and also a better solution to a little asymetrical phase described in previous section.
 
 \begin{thebibliography}{9}
 	\bibitem{ray2002}
@@ -78,6 +95,12 @@ b- Problem of second signing party not broadcasting the transaction
 	Gregory Maxwell,
 	\textit{The first successful Zero-Knowledge Contingent Payment}, 2016.
 	Available from https://bitcoincore.org/en/2016/02/26/zero-knowledge-contingent-payments-announcement/
+	
+	\bibitem{ethzkSNARK}
+	Christian Reitwiessner,
+	\textit{zkSNARKs in a nutshell}, 2016.
+	Available from
+	https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell/
 	
 	\bibitem{andrychowicz}
 	Marcin Andrychowicz, Stefan Dziembowski, Daniel Malinowski, Lukasz Mazurek,
