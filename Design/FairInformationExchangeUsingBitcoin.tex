@@ -17,16 +17,20 @@
 \maketitle
 
 \begin{abstract}
-There are some problems in which it is required to exchange two pieces of information between parties who do not trust each other, two of these problems are mentioned in the next section. This problem has been vastly studied, for example in \cite{ray2002} and \cite{asokan99}. In this article a method is presented so that by building and publishing a bitcoin transaction, each party should either reveal the agreed upon piece of information or if after some designated time passed, pay an agreed upon sum of Bitcoin to the other party.
+There are some conditions in which it is required to exchange two pieces of information between parties who do not trust each other; two of these conditions are mentioned in the next section. This problem has been vastly studied, for example in \cite{ray2002} and \cite{asokan99}. In this article a method is presented so that by building and publishing a custom built bitcoin transaction, each party should either reveal the agreed upon piece of information or if after some designated time passed, pay an agreed upon sum of bitcoin to the other party.
 
-\textbf{Related work:} A similar high level study is available including some suggestions to change Bitcoin protocol in \cite{andrychowicz}. In \cite{maxwell2016} a method using zkSNARKs\cite{ethzkSNARK} to pay for a solution to a problem is described. The current article uses the idea described there.
+
 \end{abstract}
 
 \section{Introduction}
-Two samples of the problems of interest are: a- Assuming two parties have sent two different assets to each other through a configuration of lightning network \cite{lightning} and the assets have arrived locked by a pre-image (R). If now parties exchange the pre-images, actually they can exchange their assets. b- Assume two parties want to exchange their signatures for example (RSA signatures on a document), the desired final state is that either each party should have the others signatures or neither should have the other's one (zkSNARK to make sure what is provided is actually the signature). When strong fairness is required (which roughly means at end of exchange either both parties have the required information or no party has any additional information about the other party item) this problems is proved not to be solvable in peer-to-peer without a trusted third party \cite{impossible}.
+Two samples of the problems of interest are: a- Assuming two parties have sent two different assets to each other through a configuration of lightning network \cite{lightning} and the assets have arrived locked by a pre-image (R). If now parties exchange the pre-images, actually they can exchange their assets\footnote{This could be also somehow achieved by a method known as atomic swapping \cite{lnswap}, the author does not think the name is appropriate since the operation is actually divisible to smaller pieces, also the control of the operation resides in hands of one party, so it may require more analysis.}. b- Assume two parties want to exchange their signatures for example (RSA signatures on a document), the desired final state is that either each party should have the other one's signature or neither should have the other's one (zkSNARK \cite{ethzkSNARK} could be used as a method to make sure what is provided is actually the signature). In the case of requirement for strong fairness (which roughly means at end of exchange either both parties have the required information or no party has any additional information about the other party item), this problems is proved not to be solvable in peer-to-peer configuration without a trusted third party \cite{impossible}.
+
+In the proposed protocol in this article, instead of relying on a third party which is required to be trusted, we use Bitcoin blockchain capabilities to ensure the desired exchange operation will happen or otherwise the non cooperating party will be punished by an agreed upon sum.
+
+\textbf{Related work:} A similar high level study is available including some suggestions to introduce some changes to Bitcoin protocol in \cite{andrychowicz}. In \cite{maxwell2016} a method using zkSNARKs\cite{ethzkSNARK} to pay for a solution to a problem is described. The current article uses the idea described there.
 
 \section{Bitcoin transaction with penalty}
-Using Bitcoin network, we can ask each party to put a collateral in Bitcoin transaction that will be returned to him/her when (s)he contributes the secret publicly, otherwise after some timeout the collateral will be spendable by the other party. By using this method each party is forced to release the secret or pay a penalty, if (s)he does not do so.
+Using Bitcoin network, we can ask each party to put a collateral in a Bitcoin transaction that will be returned to him/her when (s)he contributes the secret publicly, otherwise after some timeout the collateral will be spendable by the other party. By using this method each party is forced to release the secret or pay a penalty, if (s)he does not do so.
 
 The transaction should be of segregated witness \cite{segwit} type, so its transaction id could be known without signatures and monitored on blockchain, when a party who signs the transaction the second, if did not broadcast the transaction (which may have lower probability, since before this signature exchange phase, both parties have followed some other procedures and somehow showed their intentions for exchange; although more analysis may be required here), the transaction could be monitored for further actions.
 
@@ -53,7 +57,7 @@ OP_SHA256
 OP_IF
 <Self Pubkey>
 OP_ELSE
-<block_height+number of blocks in the required timeout period> OP_CHECKLOCKTIMEVERIFY OP_DROP
+<block_height+number of blocks in timeout period> OP_CHECKLOCKTIMEVERIFY OP_DROP
 <Other party Pubkey>
 OP_ENDIF
 OP_CHECKSIG
@@ -101,6 +105,11 @@ In this article I have presented a method to exchange two pieces of information 
 	\textit{zkSNARKs in a nutshell}, 2016.
 	Available from
 	https://blog.ethereum.org/2016/12/05/zksnarks-in-a-nutshell/
+	
+	\bibitem{lnswap}
+	Conner Fromknecht,
+	\textit{Connecting Blockchains: Instant Cross-Chain Transactions On Lightning},
+	Available from https://blog.lightning.engineering/announcement/2017/11/16/ln-swap.html
 	
 	\bibitem{andrychowicz}
 	Marcin Andrychowicz, Stefan Dziembowski, Daniel Malinowski, Lukasz Mazurek,
