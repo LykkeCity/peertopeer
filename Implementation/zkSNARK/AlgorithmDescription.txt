@@ -1,0 +1,16 @@
+We will name the client private key and public key, clientPrivKey and clientPubKey.
+
+1- Both sides know the text for which signature is to be exchanged, we will name hash of this text as textHash.
+2- We will sign textHash by clientPrivKey (signature)
+3- We will select an encryption key independent of client keys (encryptKey)
+4- We will encrypt “signature” with “encryptKey”
+5- We will compute hash for encryptKey (encryptKeyHash)
+6- We will prove the execution of following method in prover side (Probably using https://github.com/pepper-project/pequin/blob/master/GETTINGSTARTED.md )
+{
+boolean b = true;
+encryptKey = Retrive as a Private prover input
+sigDecrypted = Decrypt(sigEncrypted, encryptKey)
+b = b & (encryptKeyHash == Hash(encryptKey))
+b = b & (As clientPubKey confirms sigDecrypted is the signature of sigtextHash)
+b is true;
+}
